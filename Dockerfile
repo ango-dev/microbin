@@ -1,4 +1,4 @@
-FROM rust:1 AS build
+FROM rust:1-bookworm AS build
 
 WORKDIR /app
 
@@ -9,7 +9,8 @@ RUN DEBIAN_FRONTEND=noninteractive \
 
 COPY . .
 
-RUN CARGO_NET_GIT_FETCH_WITH_CLI=true cargo build --release && \
+# LZMA_API_STATIC bundles liblzma into the binary; distroless/cc does not ship it
+RUN LZMA_API_STATIC=1 CARGO_NET_GIT_FETCH_WITH_CLI=true cargo build --release && \
     mkdir -p /app/microbin_data
 
 # https://github.com/GoogleContainerTools/distroless
